@@ -1,41 +1,50 @@
 package main
 
 import (
-	"fmt"
+	"container/heap"
 )
 
 type RiderArrival struct {
-	origin      int
-	destination int
-	arrival     int
+	origin      Floor
+	destination Floor
+	arrival     IntTime
 }
 
-func NewRiderArrival(o int, d int, a int) *RiderArrival {
-	return &RiderArrival{o, d, a}
+func NewRiderArrival(origin Floor, destination Floor, arrivalTime IntTime) *RiderArrival {
+	return &RiderArrival{origin, destination, arrivalTime}
 }
 
-func (a *RiderArrival) goingUp() bool {
-	return a.destination > a.origin
-}
-
-func (a *RiderArrival) print() {
-	var direction string
-	if a.goingUp() {
-		direction = "up"
-	} else {
-		direction = "down"
-	}
-	fmt.Printf("Going %s from floor %d to floor %d, arrived at %d\n", direction, a.origin, a.destination, a.arrival)
-}
 
 type Riders []*RiderArrival
+
+func NewRiders(r []*RiderArrival) *Riders {
+	riders := make(Riders,0)
+	riders = append(riders, r...)
+	if(len(riders) > 0) {
+		heap.Init(&riders)
+	}
+	return &riders
+}
+func (rs *Riders) AddRider(r *RiderArrival) {
+	heap.Push(rs, r)
+}
 
 func (a Riders) Len() int           { return len(a) }
 func (a Riders) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a Riders) Less(i, j int) bool { return a[i].arrival < a[j].arrival }
 
-func (rs Riders) print() {
-	for _,r := range rs {
-		r.print()
-	}
+func (rs *Riders) Push(x interface{}) {
+	*rs = append(*rs, x.(*RiderArrival))
+}
+
+func (rs *Riders) Pop() interface{} {
+	pq := *rs
+	n := len(pq)
+	item := pq[n-1]
+	*rs = pq[0 : n-1]
+	return item
+}
+
+func(rs *Riders) HasRiders() bool {
+	return len(*rs) > 0
 }
