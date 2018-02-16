@@ -1,11 +1,12 @@
 package main
 
-import (
-)
+import ()
+
 const (
-	Up = iota
-	Down = iota
-	Stopped = iota
+	TransportingUp   = iota
+	TransportingDown = iota
+	Stopped          = iota
+	Repositioning    = iota
 
 	defaultCapacity          = 10
 	defaultInitialFloorSpeed = 2000
@@ -29,24 +30,31 @@ func NewDefaultElevator() *ElevatorType {
 	}
 }
 
+type Status int
+
 type Elevator struct {
 	*ElevatorType
-	necessaryStops []int
-	direction int
-	currentLoad  int
-	currentFloor int
-	targetFloor  int
-	arrivalTime  int
+	necessaryStops  []int
+	direction       int
+	currentLoad     int
+	currentFloor    int
+	targetFloor     int
+	status Status
+	arrivalTime     int
+	lastCommandTime int
+	busyUntil       int
 }
+
 func NewElevator() *Elevator {
 	elevatorType := NewDefaultElevator()
 	return &Elevator{
-		ElevatorType:elevatorType,
-		necessaryStops: make([]int,elevatorType.capacity),
-		direction:Stopped,
-		arrivalTime:0,
-		currentFloor:0,
-		targetFloor:0,
+		ElevatorType:    elevatorType,
+		necessaryStops:  make([]int, elevatorType.capacity),
+		direction:       Stopped,
+		arrivalTime:     0,
+		currentFloor:    0,
+		targetFloor:     0,
+		status: Stopped,
 	}
 }
 
@@ -71,7 +79,7 @@ func (e *Elevator) position() int {
 	return e.currentFloor
 }
 
-func (e *Elevator) SetTargetFloor(floor int) int {
+func (e *Elevator) SetTargetFloor(time int, floor int) int {
 	floorDelta := e.currentFloor - floor
 	if floorDelta == 0 {
 		return 0
@@ -79,10 +87,29 @@ func (e *Elevator) SetTargetFloor(floor int) int {
 		floorDelta = -floorDelta
 	}
 
-	e.targetFloor = floor
-	time := e.ElevatorType.initialFloorSpeed + (floorDelta - 1) * e.ElevatorType.additionalFloorSpeed
-	return time
+	travelToFloor(e, floor, floorDelta, time)
+	return e.busyUntil
 }
+func travelToFloor(e *Elevator, floor int, floorDelta int, time int) {
+	e.targetFloor = floor
+	travelTime := e.ElevatorType.initialFloorSpeed + (floorDelta-1)*e.ElevatorType.additionalFloorSpeed
+	e.lastCommandTime = time
+	e.busyUntil = time + travelTime
+	e.status = Repositioning
+}
+
+func (e *Elevator) Update(time int) (int,Status) {
+	if time < e.busyUntil {
+		return e.busyUntil, e.status
+	}
+
+	e.lastCommandTime = time
+	e.status = Stopped
+	return e.lastCommandTime, e.status
+}
+//func (e *Elevator) Pickup(time int, []*RiderArrival, Status) int {
+//	return
+//}
 
 // Match w/elevator = e.idle || e.canReach
 // canReach = (e.stopped || e.canStop(floor)) && (e.nextStop == null || e.nextStop after floor)
