@@ -3,10 +3,14 @@ package main
 import (
 )
 const (
+	Up = iota
+	Down = iota
+	Stopped = iota
+
 	defaultCapacity          = 10
-	defaultInitialFloorSpeed = 2
-	defaultAddtlFloorSpeed   = 1
-	defaultDoorOpenTime      = 6
+	defaultInitialFloorSpeed = 2000
+	defaultAddtlFloorSpeed   = 1000
+	defaultDoorOpenTime      = 6000
 )
 
 type ElevatorType struct {
@@ -27,6 +31,8 @@ func NewDefaultElevator() *ElevatorType {
 
 type Elevator struct {
 	*ElevatorType
+	necessaryStops []int
+	direction int
 	currentLoad  int
 	currentFloor int
 	targetFloor  int
@@ -36,15 +42,18 @@ func NewElevator() *Elevator {
 	elevatorType := NewDefaultElevator()
 	return &Elevator{
 		ElevatorType:elevatorType,
+		necessaryStops: make([]int,elevatorType.capacity),
+		direction:Stopped,
 		arrivalTime:0,
 		currentFloor:0,
 		targetFloor:0,
 	}
 }
 
-func (e *Elevator) moving() bool {
-	return e.targetFloor != e.currentFloor
+func (e *Elevator) Direction() int {
+	return e.direction
 }
+
 func (e *Elevator) movingUp() bool {
 	switch {
 	case e.targetFloor > e.currentFloor:
