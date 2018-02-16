@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 )
 
 type RiderArrival struct {
@@ -18,15 +17,6 @@ func (a *RiderArrival) goingUp() bool {
 	return a.destination > a.origin
 }
 
-func (a *RiderArrival) print() {
-	var direction string
-	if a.goingUp() {
-		direction = "up"
-	} else {
-		direction = "down"
-	}
-	fmt.Printf("Going %s from floor %d to floor %d, arrived at %d\n", direction, a.origin, a.destination, a.arrival)
-}
 
 type Riders []*RiderArrival
 
@@ -34,8 +24,15 @@ func (a Riders) Len() int           { return len(a) }
 func (a Riders) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a Riders) Less(i, j int) bool { return a[i].arrival < a[j].arrival }
 
-func (rs Riders) print() {
-	for _,r := range rs {
-		r.print()
-	}
+func (pq *Riders) Push(x interface{}) {
+	*pq = append(*pq, x.(*RiderArrival))
 }
+
+func (pq *Riders) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	*pq = old[0 : n-1]
+	return item
+}
+

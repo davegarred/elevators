@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 )
 const (
 	defaultCapacity          = 10
@@ -64,7 +63,7 @@ func (e *Elevator) position() int {
 }
 
 func (e *Elevator) SetTargetFloor(floor int) int {
-	floorDelta := math.Abs(e.currentFloor - floor)
+	floorDelta := e.currentFloor - floor
 	if floorDelta == 0 {
 		return 0
 	} else if floorDelta < 0 {
@@ -76,3 +75,5 @@ func (e *Elevator) SetTargetFloor(floor int) int {
 	return time
 }
 
+// Match w/elevator = e.idle || e.canReach
+// canReach = (e.stopped || e.canStop(floor)) && (e.nextStop == null || e.nextStop after floor)
