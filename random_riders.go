@@ -16,12 +16,12 @@ func init() {
 	r = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-func GoingUpEvenStrategy(floor Floor) []*RiderArrival {
+func GoingUpEvenStrategy(floor Floor) []*Rider {
 	return EvenStrategy(floor, UpRider)
 }
 
-func EvenStrategy(floor Floor, f func(Floor, IntTime) *RiderArrival) []*RiderArrival {
-	arrivals := make([]*RiderArrival, 100)
+func EvenStrategy(floor Floor, f func(Floor, IntTime) *Rider) []*Rider {
+	arrivals := make([]*Rider, 100)
 	for i := 0; i < 50; i++ {
 		baseTime := IntTime(60 * i) * seconds
 		arrivals[2*i] = f(floor, baseTime+IntTime(r.Intn(60))*seconds)
@@ -30,9 +30,9 @@ func EvenStrategy(floor Floor, f func(Floor, IntTime) *RiderArrival) []*RiderArr
 	return arrivals
 }
 
-func UpRider(floor Floor, time IntTime) *RiderArrival {
+func UpRider(floor Floor, time IntTime) *Rider {
 	return NewRiderArrival(0, floor, time)
 }
-func DownRider(floor Floor, time IntTime) *RiderArrival {
+func DownRider(floor Floor, time IntTime) *Rider {
 	return NewRiderArrival(floor, 0, time)
 }

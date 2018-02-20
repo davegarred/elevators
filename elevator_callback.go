@@ -1,17 +1,17 @@
 package main
 
 type ElevatorCallback struct {
-	droppedOffRiders []*RiderArrival
+	droppedOffRiders []*Rider
 }
 
 func NewElevatorCallback() *ElevatorCallback {
-	return &ElevatorCallback{make([]*RiderArrival,0)}
+	return &ElevatorCallback{make([]*Rider,0)}
 }
 
-func (c *ElevatorCallback) DropOffRider(rider *RiderArrival) {
+func (c *ElevatorCallback) DropOffRider(rider *Rider) {
 	c.droppedOffRiders = append(c.droppedOffRiders, rider)
 }
 
-func (c *ElevatorCallback) GetDroppedOffRiders() []*RiderArrival {
+func (c *ElevatorCallback) GetDroppedOffRiders() []*Rider {
 	return c.droppedOffRiders
 }

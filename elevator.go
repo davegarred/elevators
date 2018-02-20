@@ -39,7 +39,7 @@ type Elevator struct {
 	*ElevatorType
 	callback       *ElevatorCallback
 	necessaryStops []Floor
-	passengers     []*RiderArrival
+	passengers     []*Rider
 	direction      Status
 	currentFloor   Floor
 	targetFloor    Floor
@@ -54,20 +54,13 @@ func NewElevator(callback *ElevatorCallback) *Elevator {
 		ElevatorType:   elevatorType,
 		callback:       callback,
 		necessaryStops: make([]Floor, 0, elevatorType.capacity),
-		passengers:     make([]*RiderArrival, 0, elevatorType.capacity),
+		passengers:     make([]*Rider, 0, elevatorType.capacity),
 		direction:      Stopped,
 		arrivalTime:    0,
 		currentFloor:   0,
 		targetFloor:    0,
 		status:         Stopped,
 	}
-}
-
-func (e *Elevator) position() Floor {
-	if e.currentFloor != e.targetFloor {
-		panic("Programming error: Attempt to check position of a moving elevator")
-	}
-	return e.currentFloor
 }
 
 func (e *Elevator) SetTargetFloor(time IntTime, floor Floor) IntTime {
@@ -106,7 +99,7 @@ func (e *Elevator) Update(time IntTime) (IntTime, Status) {
 
 func (e *Elevator) dropOffRiders(floor Floor) {
 	currentPassengers := e.passengers
-	e.passengers = make([]*RiderArrival, 0, e.ElevatorType.capacity)
+	e.passengers = make([]*Rider, 0, e.ElevatorType.capacity)
 	for _, rider := range currentPassengers {
 		if rider.destination == floor {
 			e.callback.DropOffRider(rider)
@@ -141,7 +134,7 @@ func (e *Elevator) findNextFloor() Floor {
 	return e.currentFloor
 }
 
-func (e *Elevator) Pickup(time IntTime, riders []*RiderArrival, status Status) (IntTime, Status) {
+func (e *Elevator) Pickup(time IntTime, riders Riders, status Status) (IntTime, Status) {
 	if len(riders) == 0 {
 		return time, e.status
 	}

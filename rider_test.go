@@ -6,7 +6,7 @@ import (
 )
 
 func TestRider(t *testing.T) {
-	arrivals := make([]*RiderArrival,0)
+	arrivals := make([]*Rider,0)
 	arrivals = append(arrivals,NewRiderArrival(0, 5, 13))
 	arrivals = append(arrivals,NewRiderArrival(0, 2, 31))
 	arrivals = append(arrivals,NewRiderArrival(0, 8, 19))
@@ -29,7 +29,7 @@ func TestFloorList(t *testing.T) {
 func validateSorted(t *testing.T, rs *Riders) {
 	time := IntTime(0)
 	for rs.HasRiders() {
-		r := heap.Pop(rs).(*RiderArrival)
+		r := heap.Pop(rs).(*Rider)
 		if time > r.arrival {
 			t.Errorf("Riders not correctly sorted by date, arrival at %d should not be before last at %d", r.arrival, time)
 		}

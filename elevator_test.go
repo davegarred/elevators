@@ -23,7 +23,7 @@ func TestMoveElevator(t *testing.T) {
 func TestPickupOne(t *testing.T) {
 	callback := NewElevatorCallback()
 	elevator := NewElevator(callback)
-	riders := make([]*RiderArrival, 1)
+	riders := make([]*Rider, 1)
 	riders[0] = NewRiderArrival(0,2, 0)
 
 	if next,status := elevator.Pickup(0, riders, TransportingUp); next != (6 + 3) * seconds || status != TransportingUp {
@@ -42,7 +42,7 @@ func TestPickupOne(t *testing.T) {
 func TestPickupTwo_differentFloors(t *testing.T) {
 	callback := NewElevatorCallback()
 	elevator := NewElevator(callback)
-	riders := make([]*RiderArrival, 2)
+	riders := make([]*Rider, 2)
 	riders[0] = NewRiderArrival(0,2, 0)
 	riders[1] = NewRiderArrival(0,4, 0)
 
